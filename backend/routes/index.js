@@ -1,15 +1,14 @@
 import express from 'express';
 import joi from 'joi';
 import mongoose from 'mongoose';
-import {Task} from '../models/index.js'
+import { Task } from '../models/index.js'
 import { validateTaskObject } from '../utils/index.js';
 
 const api = express.Router()
-
 api.get('/tasks', async (req, res) => {
     try {
         // Parse query parameters
-        const { filterField, filterValue, sortBy, sortOrder, page, limit } = req.query;
+        const { filterField, filterValue, sortBy, sortOrder, page, limit, search } = req.query;
 
         // Build the filter object based on query parameters
         const filter = {};
@@ -23,6 +22,19 @@ api.get('/tasks', async (req, res) => {
             sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
         }
 
+        // Build the search object to search across all columns
+        const searchFilter = {};
+        if (search) {
+            const searchRegex = new RegExp(search, 'i'); // Case-insensitive search
+            searchFilter.$or = [
+                { title: searchRegex },
+                { description: searchRegex },
+            ];
+        }
+
+        // Merge search filter with existing filter
+        const finalFilter = { ...filter, ...searchFilter };
+
         // Apply pagination
         const options = {
             skip: (page - 1) * limit,
@@ -30,7 +42,7 @@ api.get('/tasks', async (req, res) => {
         };
 
         // Perform the query with filtering, sorting, and pagination
-        const data = await Task.find(filter, { task: 0, __v: 0, updatedAt: 0 })
+        const data = await Task.find(finalFilter, { task: 0, __v: 0, updatedAt: 0 })
             .sort(sort)
             .skip(options.skip)
             .limit(options.limit);
@@ -56,7 +68,7 @@ api.post('/task', async (req, res) => {
 
     // validation
     const { error, value } = validateTaskObject(req.body)
-    
+
     if (error) return res.status(422).send(error)
 
     // insert data 
@@ -79,7 +91,7 @@ api.post('/task', async (req, res) => {
 api.put('/task/:id', async (req, res) => {
     // validate type 
     const { error, value } = validateTaskObject(req.body)
-    
+
     if (error) return res.status(422).send(error);
     try {
         const updatedTask = await Task.updateOne(
@@ -87,7 +99,7 @@ api.put('/task/:id', async (req, res) => {
             { $set: { ...value } },
             { upsert: true }
         );
-        
+
         res.send(updatedTask);
     } catch (error) {
         res.status(500).send({ error: true, message: 'Error updating task', details: error });
