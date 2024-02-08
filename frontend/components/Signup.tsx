@@ -17,7 +17,7 @@ const Signup: React.FC = () => {
             event.preventDefault();
             const formData = new FormData(event.target as HTMLFormElement);
 
-            const email = formData.get('username') as string;
+            const email = formData.get('email') as string;
             const password = formData.get('password') as string;
             const firstName = formData.get('firstName') as string;
             const lastName = formData.get('lastName') as string;
