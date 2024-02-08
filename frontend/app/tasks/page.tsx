@@ -6,7 +6,8 @@ import Profile from '../../components/Profile';
 import TaskList from '../../components/TaskList';
 
 
-export default function Tasks() {
+export default function Tasks({ logout }: any) {
+
   return (
     <Box sx={{ flexGrow: 1, padding: 1, }}>
       <Grid container spacing={2}>

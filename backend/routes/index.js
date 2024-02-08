@@ -1,10 +1,65 @@
 import express from 'express';
 import joi from 'joi';
 import mongoose from 'mongoose';
-import { Task } from '../models/index.js'
-import { validateTaskObject } from '../utils/index.js';
+import bcrypt from 'bcrypt';
 
-const api = express.Router()
+import { Task, User } from '../models/index.js'
+import { generateToken, validateTaskObject } from '../utils/index.js';
+
+const api = express.Router();
+
+
+api.post('/register', async (req, res) => {
+    const { firstName, lastName, email, password } = req.body;
+
+    try {
+
+        // Check if the email or email already exists
+        const existingUser = await User.findOne({ $or: [{ email }] });
+
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email already exists' });
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // If not, create a new user
+        const newUser = {
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword, // This will be hashed in the user model's pre-save hook
+        };
+
+        const result = await new User(newUser).save()
+
+        const token = generateToken(newUser);
+        res.cookie('token', token, { httpOnly: true });
+
+        res.status(201).json({ success: true, token, user: { _id: result.insertedId, email } });
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+
+api.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (user && bcrypt.compareSync(password, user.password)) {
+            const token = generateToken(user);
+            res.json({ success: true, token });
+        } else {
+            res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 api.get('/tasks', async (req, res) => {
     try {
         // Parse query parameters

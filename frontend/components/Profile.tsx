@@ -1,8 +1,11 @@
 // ProfileCard.js
 import React from 'react';
 import { Avatar, Card, CardContent, Typography, Grid, Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
 
 const Profile = () => {
+    const router = useRouter();
+
     const avatarSrc = "https://example.com/avatar.jpg"  // Replace with the actual URL of your avatar image
     const name = "John Doe";
     const fields = [
@@ -10,6 +13,15 @@ const Profile = () => {
         { key: 'Location', value: 'City, Country' },
         // Add more key-value pairs as needed
     ];
+
+    const logout = () => {
+        console.log("hello")
+
+        // Redirect to the login page
+        router.replace('/');
+    }
+
+
     return (
         <Card>
             <CardContent>
@@ -34,7 +46,9 @@ const Profile = () => {
                         </Grid>
                     ))}
                 </Grid>
-                <Button fullWidth variant="outlined" color="secondary" onClick={() => { }} style={{ marginTop: 10 }}>
+                <Button fullWidth variant="outlined" color="secondary" onClick={() => {
+                    logout()
+                }} style={{ marginTop: 10 }}>
                     Logout
                 </Button>
             </CardContent>
