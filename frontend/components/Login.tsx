@@ -84,7 +84,7 @@ const LoginScreen: React.FC = () => {
                     </Button>
 
                     <Typography textAlign={"center"} paddingTop={"10px"}>
-                        Click here to <Link href="/signup">SignUp</Link>
+                        Click here to <Link href="/signup"><Typography display={"inline"} color={"secondary"}>Signup</Typography></Link>
                     </Typography>
                 </form>
             </Paper>

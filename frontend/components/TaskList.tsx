@@ -51,6 +51,19 @@ export default function TaskList() {
                     filter: true,
                     sort: true,
                     sortThirdClickReset: true,
+                    customBodyRender: (value: string) => {
+                        // return value.toUpperCase();
+                        if (value == "todo") {
+                            return "To Do";
+                        }
+                        if (value == "inprogress") {
+                            return "In Progress";
+                        }
+                        if (value == "completed") {
+                            return "Completed";
+                        }
+
+                    }
                 }
             },
             {

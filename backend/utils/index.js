@@ -2,7 +2,7 @@ import joi from 'joi';
 import jwt from 'jsonwebtoken';
 
 const task = joi.object({
-    title: joi.string().min(3).max(30).required(),
+    title: joi.string().min(3).max(100).required(),
     status: joi.string().required(),
     created_by: joi.string(),
     description: joi.string(),

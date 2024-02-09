@@ -108,7 +108,8 @@ const Signup: React.FC = () => {
                         Signup
                     </Button>
                     <Typography textAlign={"center"} paddingTop={"10px"}>
-                        back to <Link href="/">Login</Link>
+                        back to <Link href="/"><Typography display={"inline"} color={"secondary"}>Login</Typography></Link>
+
                     </Typography>
                 </form>
             </Paper>
