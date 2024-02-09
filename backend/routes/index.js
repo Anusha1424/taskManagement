@@ -34,9 +34,10 @@ api.post('/register', async (req, res) => {
         const result = await new User(newUser).save()
 
         const token = generateToken(newUser);
+        const user = await User.findOne({ email });
         res.cookie('token', token, { httpOnly: true });
 
-        res.status(201).json({ success: true, token, user: { _id: result.insertedId, email } });
+        res.status(201).json({ success: true, token, user });
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
@@ -50,7 +51,7 @@ api.post('/login', async (req, res) => {
         const user = await User.findOne({ email });
         if (user && bcrypt.compareSync(password, user.password)) {
             const token = generateToken(user);
-            res.json({ success: true, token });
+            res.json({ success: true, token, user });
         } else {
             res.status(401).json({ success: false, message: 'Invalid credentials' });
         }

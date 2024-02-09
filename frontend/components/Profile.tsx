@@ -1,26 +1,33 @@
 // ProfileCard.js
-import React from 'react';
-import { Avatar, Card, CardContent, Typography, Grid, Button } from '@mui/material';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import {
+    Avatar,
+    Card,
+    CardContent,
+    Typography,
+    Grid,
+    Button,
+} from "@mui/material";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const Profile = () => {
     const router = useRouter();
+    const data: any = localStorage.getItem("userData");
+    console.log("data: ", JSON.parse(data));
+    const userData = JSON.parse(data);
+    const avatarSrc = "https://example.com/avatar.jpg"; // Replace with the actual URL of your avatar image
+    const name = userData.firstName + " " + userData.lastName;
 
-    const avatarSrc = "https://example.com/avatar.jpg"  // Replace with the actual URL of your avatar image
-    const name = "John Doe";
-    const fields = [
-        { key: 'Age', value: '25' },
-        { key: 'Location', value: 'City, Country' },
-        // Add more key-value pairs as needed
-    ];
 
-    const logout = () => {
-        console.log("hello")
+    const logout = async () => {
+        const response: any = await axios.post(`/api/logout`);
 
+        if (response.status === 200) {
+            router.replace("/");
+        }
         // Redirect to the login page
-        router.replace('/');
-    }
-
+    };
 
     return (
         <Card>
@@ -34,7 +41,7 @@ const Profile = () => {
                     </Grid>
                 </Grid>
 
-                <Grid sx={{ padding: "20px 0px 0px 10px" }} container spacing={2}>
+                {/* <Grid sx={{ padding: "20px 0px 0px 10px" }} container spacing={2}>
                     {fields.map((field, index) => (
                         <Grid container spacing={2} key={index}>
                             <Grid item xs={6}>
@@ -45,10 +52,16 @@ const Profile = () => {
                             </Grid>
                         </Grid>
                     ))}
-                </Grid>
-                <Button fullWidth variant="outlined" color="secondary" onClick={() => {
-                    logout()
-                }} style={{ marginTop: 10 }}>
+                </Grid> */}
+                <Button
+                    fullWidth
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                        logout();
+                    }}
+                    style={{ marginTop: 10 }}
+                >
                     Logout
                 </Button>
             </CardContent>

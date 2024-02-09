@@ -15,13 +15,14 @@ export async function POST(request: any) {
             lastName
         });
         console.log(data)
-        const { token } = data
+        const { token, user } = data
 
 
         // create a next response
         const response = NextResponse.json({
             message: "Signed Up successfully",
             success: true,
+            user
         });
         // set this token in the user cookies
         response.cookies.set("token", token, { httpOnly: true });

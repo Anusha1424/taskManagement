@@ -1,8 +1,9 @@
 "use client";
-import React, { FormEvent, useState } from 'react';
-import { Container, Paper, Typography, TextField, Button } from '@mui/material';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import React, { FormEvent, useState } from "react";
+import { Container, Paper, Typography, TextField, Button } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const LoginScreen: React.FC = () => {
     const router = useRouter();
@@ -11,39 +12,45 @@ const LoginScreen: React.FC = () => {
 
     const handleLogin = async (event: FormEvent) => {
         try {
-            if (errorMessage != "")
-                setErrorMessage("")
+            if (errorMessage != "") setErrorMessage("");
 
             event.preventDefault();
             const formData = new FormData(event.target as HTMLFormElement);
 
-            const email = formData.get('username') as string;
-            const password = formData.get('password') as string;
-
+            const email = formData.get("username") as string;
+            const password = formData.get("password") as string;
 
             const response: any = await axios.post(`/api/login`, {
                 email,
-                password
+                password,
             });
 
             if (response.status === 200) {
+                localStorage.setItem("userData", JSON.stringify(response.data.user));
+
                 router.push("/tasks");
             }
-
         } catch (error: any) {
-            console.error('Error during login:', error);
-            setErrorMessage(error.response.data.message)
-
+            console.error("Error during login:", error);
+            setErrorMessage(error.response.data.message);
         }
     };
 
     return (
         <Container component="main" maxWidth="xs">
-            <Paper elevation={3} sx={{ padding: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Paper
+                elevation={3}
+                sx={{
+                    padding: 4,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                }}
+            >
                 <Typography component="h1" variant="h5">
                     Login
                 </Typography>
-                <form onSubmit={handleLogin} style={{ width: '100%', marginTop: 1 }}>
+                <form onSubmit={handleLogin} style={{ width: "100%", marginTop: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -64,14 +71,21 @@ const LoginScreen: React.FC = () => {
                         id="password"
                         autoComplete="current-password"
                     />
-                    {errorMessage &&
-                        <Typography color={"red"}>
-                            {errorMessage}
-                        </Typography>
-                    }
-                    <Button type="submit" fullWidth variant="outlined" sx={{ marginTop: 2 }}>
+                    {errorMessage && (
+                        <Typography color={"red"}>{errorMessage}</Typography>
+                    )}
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="outlined"
+                        sx={{ marginTop: 2 }}
+                    >
                         Login
                     </Button>
+
+                    <Typography textAlign={"center"} paddingTop={"10px"}>
+                        Click here to <Link href="/signup">SignUp</Link>
+                    </Typography>
                 </form>
             </Paper>
         </Container>
